@@ -171,6 +171,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
         tree.write(team.unnamed.creative.model.Model.builder()
                 .key(PLAYER_HEAD_KEY)
                 .parent(TEMPLATE_SKULL)
+                .textures(ModelTexture.builder().build())
                 .overrides(headOverrides)
                 .build());
     }
