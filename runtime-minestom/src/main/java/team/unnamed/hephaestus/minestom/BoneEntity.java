@@ -58,6 +58,9 @@ final class BoneEntity extends GenericBoneEntity {
                             .color(new Color(0xFFFFFF))
                             .build())
                     .build();
+    private static final ItemStack BASE_HELMET_SKULL =
+            ItemStack.builder(Material.PLAYER_HEAD)
+                    .build();
 
     private final ModelEntity view;
     private final Bone bone;
@@ -87,7 +90,7 @@ final class BoneEntity extends GenericBoneEntity {
         meta.setInvisible(true);
 
         // set helmet with custom model data from our bone
-        setHelmet(BASE_HELMET.withMeta(itemMeta ->
+        setHelmet((view.model().asset().isPlayerHead() ? BASE_HELMET_SKULL : BASE_HELMET).withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
     }
 
