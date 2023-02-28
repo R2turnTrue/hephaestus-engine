@@ -56,7 +56,9 @@ import java.util.stream.Collectors;
  */
 final class ResourceModelWriter implements ModelWriter<FileTree> {
 
+    private static final Key TEMPLATE_SKULL = Key.key("item/template_skull");
     private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
+    private static final Key PLAYER_HEAD_KEY = Key.key("item/player_head");
     private static final String DEFAULT_NAMESPACE = "hephaestus";
 
     private static final Vector3Float SCALE = new Vector3Float(
@@ -84,21 +86,29 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             FileTree tree,
             ModelAsset model,
             Collection<ItemOverride> overrides,
+            Collection<ItemOverride> headOverrides,
             Collection<BoneAsset> assets
     ) {
         for (BoneAsset bone : assets) {
             @Subst("model/bone") String path = model.name() + '/' + bone.name();
             Key key = Key.key(namespace, path);
 
-            overrides.add(ItemOverride.of(
-                    key,
-                    ItemPredicate.customModelData(bone.customModelData())
-            ));
+            if(model.isPlayerHead()) {
+                headOverrides.add(ItemOverride.of(
+                        key,
+                        ItemPredicate.customModelData(bone.customModelData())
+                ));
+            } else {
+                overrides.add(ItemOverride.of(
+                        key,
+                        ItemPredicate.customModelData(bone.customModelData())
+                ));
+            }
 
             tree.write(toCreative(key, model, bone));
 
             // write children
-            writeBones(tree, model, overrides, bone.children());
+            writeBones(tree, model, overrides, headOverrides, bone.children());
         }
     }
 
@@ -110,6 +120,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
     public void write(FileTree tree, Collection<Model> models) {
 
         List<ItemOverride> overrides = new ArrayList<>();
+        List<ItemOverride> headOverrides = new ArrayList<>();
 
         for (Model model : models) {
             ModelAsset asset = model.asset();
@@ -132,11 +143,16 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             }
 
             // write all the model bones
-            writeBones(tree, asset, overrides, asset.bones());
+            writeBones(tree, asset, overrides, headOverrides, asset.bones());
         }
 
         // sort overrides comparing by customModelData
         overrides.sort(Comparator.comparing(override -> {
+            ItemPredicate predicate = override.predicate().get(0);
+            return (Integer) predicate.value();
+        }));
+
+        headOverrides.sort(Comparator.comparing(override -> {
             ItemPredicate predicate = override.predicate().get(0);
             return (Integer) predicate.value();
         }));
@@ -150,6 +166,12 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                         ))
                         .build())
                 .overrides(overrides)
+                .build());
+
+        tree.write(team.unnamed.creative.model.Model.builder()
+                .key(PLAYER_HEAD_KEY)
+                .parent(TEMPLATE_SKULL)
+                .overrides(headOverrides)
                 .build());
     }
 

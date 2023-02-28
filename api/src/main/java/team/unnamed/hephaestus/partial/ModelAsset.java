@@ -39,17 +39,24 @@ public class ModelAsset implements Examinable {
     private final Map<String, Writable> textures;
     private final Map<Integer, String> textureMapping;
     private final Map<String, BoneAsset> bones;
+    private boolean isPlayerHead;
 
     public ModelAsset(
             String name,
             Map<String, Writable> textures,
             Map<Integer, String> textureMapping,
-            Map<String, BoneAsset> bones
+            Map<String, BoneAsset> bones,
+            boolean isPlayerHead
     ) {
         this.name = name;
         this.textures = textures;
         this.textureMapping = textureMapping;
         this.bones = bones;
+        this.isPlayerHead = isPlayerHead;
+    }
+
+    public boolean isPlayerHead() {
+        return isPlayerHead;
     }
 
     public String name() {

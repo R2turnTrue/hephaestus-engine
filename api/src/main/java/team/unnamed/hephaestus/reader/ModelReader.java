@@ -37,7 +37,6 @@ import java.io.InputStream;
  *
  * @since 1.0.0
  */
-@FunctionalInterface
 public interface ModelReader {
 
     /**
@@ -52,6 +51,8 @@ public interface ModelReader {
      * @since 1.0.0
      */
     Model read(InputStream input) throws IOException;
+
+    Model read(InputStream input, boolean isPlayerHead) throws IOException;
 
     /**
      * Reads a model from a {@link File}

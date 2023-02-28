@@ -71,6 +71,11 @@ public final class BBModelReader implements ModelReader {
 
     @Override
     public Model read(InputStream input) throws IOException {
+        return read(input, false);
+    }
+
+    @Override
+    public Model read(InputStream input, boolean isPlayerHead) throws IOException {
 
         Reader reader = new InputStreamReader(input);
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
@@ -109,7 +114,8 @@ public final class BBModelReader implements ModelReader {
                         modelName,
                         textures,
                         textureMapping,
-                        boneAssets
+                        boneAssets,
+                        isPlayerHead
                 ),
                 animations
         );
